@@ -14,7 +14,7 @@ class ScoreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Score
-        fields = ['id','student', 'subject', 'score', 'student_name', 'subject_name']
+        fields = ['id','student', 'subject', 'term' ,'score', 'student_name', 'subject_name']
 
     def validate_score(self, value):
         if not 0 <= value <= 10:
