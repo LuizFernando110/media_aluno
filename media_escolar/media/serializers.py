@@ -55,6 +55,7 @@ class StudentSerializer(serializers.ModelSerializer):
 
         for score in student.score_set.select_related('subject'):
             data[score.subject.name].append({
+                'id': score.id,
                 'term': score.term,
                 'score': score.score,
             })
@@ -69,7 +70,7 @@ class StudentSerializer(serializers.ModelSerializer):
             result.append({
                 'subject': subject_name,
                 'scores': scores,
-                'everage': everage
+                'subject_everage': everage
             })
         
         return result
