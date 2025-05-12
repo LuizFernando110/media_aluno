@@ -26,7 +26,18 @@ class ScoreSerializer(serializers.ModelSerializer):
         subject = data.get('subject')
         term = data.get('term')
 
-        if Score.objects.filter(student=student, subject=subject, term=term).exists():
+        instance = getattr(self, 'instance', None)
+
+        queryset = Score.objects.filter(
+            student=student, 
+            subject=subject, 
+            term=term
+        )
+
+        if instance:
+            queryset = queryset.exclude(pk=instance.pk)
+
+        if queryset.exists():
             raise serializers.ValidationError('Já existe uma nota para esse aluno nesse bimestre')
         
         return data
@@ -57,7 +68,7 @@ class StudentSerializer(serializers.ModelSerializer):
             data[score.subject.name].append({
                 'id': score.id,
                 'term': score.term,
-                'score': score.score,
+                'score': round(score.score, 2),
             })
 
         for scores in data.values():
@@ -66,7 +77,7 @@ class StudentSerializer(serializers.ModelSerializer):
         result = []
         for subject_name, scores in data.items():
             subject = Subject.objects.get(name=subject_name)
-            everage = student.average_subject(subject)
+            everage = round(student.average_subject(subject), 2)
             result.append({
                 'subject': subject_name,
                 'scores': scores,
